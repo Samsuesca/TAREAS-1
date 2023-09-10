@@ -16,7 +16,7 @@ option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1)
 # Función para la tarea 1
 def task_1():
     # Título de la página
-    st.title("Tarea 1: Consistencia del Estimador MCO")
+    st.header("Tarea 1: Consistencia del Estimador MCO")
 
     # Descripción del problema
     st.write("Se estudiará la consistencia (convergencia) del estimador MCO, para el siguiente modelo:")
@@ -174,7 +174,7 @@ def task_1():
 # Función para la tarea 2
 def task_2():
     # Título de la tarea
-    st.title('Tarea 2: Convergencia en Probabilidad y la Desigualdad de Chebyshev')
+    st.header('Tarea 2: Convergencia en Probabilidad y la Desigualdad de Chebyshev')
 
     # Desigualdad de Chebyshev
     st.subheader('Desigualdad de Chebyshev')

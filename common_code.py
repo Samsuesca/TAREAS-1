@@ -12,8 +12,7 @@ option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1)
 # Funciones para las tareas específicas
 def task_1():
     st.subheader('Tarea 1: Descripción de la tarea 1')
-    # Agregar contenido de la tarea 1
-
+    
 def task_2():
     st.subheader('Tarea 2: Descripción de la tarea 2')
     # Agregar contenido de la tarea 2
