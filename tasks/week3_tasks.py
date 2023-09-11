@@ -2,20 +2,20 @@ import streamlit as st
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from streamlit_option_menu import option_menu
 from scipy.optimize import minimize
 
-
-# Variable global para la longitud de la lista de opciones
-num_options = 3  # Puedes cambiar esto según tus necesidades
+st.set_page_config(page_title='S3',
+                    page_icon=':book:',
+                    layout='wide')
 
 # Título de la semana
 st.title('Semana 3 - MLEs y Modelos Binomiales')
 
-# Menú de opciones
-option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1))
 
 # Funciones para las tareas específicas
 def task_1():
+    st.write('---')
     st.subheader('Tarea 1: Varianza del Estimador de MV')
 
     # Descripción
@@ -362,14 +362,18 @@ def task_3():
 
 # Define un diccionario para mapear la selección a la función de tarea correspondiente
 task_functions = {
-    1: task_1,
-    2: task_2,
-    3: task_3
+    'Tarea 1': task_1,
+    'Tarea 2': task_2,
+    'Tarea 3': task_3
     # Agregar funciones para las demás tareas
 }
 
+st.write('---')
+selected = option_menu('Selección de Tarea', options=list(task_functions.keys()), 
+    icons=['book' for i in task_functions.keys()], default_index=0,orientation="horizontal")
+
 # Llama a la función de tarea seleccionada
-if option in task_functions:
-    task_functions[option]()
+if selected in task_functions:
+    task_functions[selected]()
 else:
     st.write('Selecciona una tarea válida en el menú de opciones.')

@@ -1,13 +1,20 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
+import numpy as np
+from scipy.special import expit
+from scipy.optimize import minimize
+import pandas as pd
+from statsmodels.discrete.conditional_models import ConditionalLogit
 
-# Variable global para la longitud de la lista de opciones
-num_options = 3  # Puedes cambiar esto según tus necesidades
+
+
+st.set_page_config(page_title='S4',
+                    page_icon=':book:',
+                    layout='wide')
 
 # Título de la semana
 st.title('Semana 4 - Modelos Multinomiales ')
 
-# Menú de opciones
-option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1))
 
 # Funciones para las tareas específicas
 def task_1():
@@ -63,7 +70,7 @@ def task_1():
     )
     st.latex(
     r'''
-   \mathbf{L}(\beta) = \sum_{i=1}^{N} \sum_{j=1}^{m} y_{ij} \log(p_{ij})
+   \mathcal{L}(\beta) = \sum_{i=1}^{N} \sum_{j=1}^{m} y_{ij} \log(p_{ij})
     '''
     )
     st.write(
@@ -71,15 +78,15 @@ def task_1():
     )
     st.latex(
     r'''
-    \frac{\partial\mathbf{L}(\beta)}{\partial \beta} = \sum_{i=1}^{N} \sum_{j=1}^{m} y_{ij} (x_{ij} - \bar{x}_i) 
+    \frac{\partial\mathcal{L}(\beta)}{\partial \beta} = \sum_{i=1}^{N} \sum_{j=1}^{m} y_{ij} (x_{ij} - \bar{x}_i) 
     '''
     )
     st.write(
     'Para maximizar, debemos sacar la segunda derivada, pero consideramos primero que $x_{ij}$ no depende en si de $\\beta$, entonces:'
     )
-    st.latex(r'\frac{\partial^2  \mathbf{L}(\beta)}{\partial \beta \partial \beta^T} = -\sum_{i=1}^N \sum_{j=1}^m y_{ij} \frac{\partial \bar{x}}{\partial \beta^T}')
+    st.latex(r'\frac{\partial^2  \mathcal{L}(\beta)}{\partial \beta \partial \beta^T} = -\sum_{i=1}^N \sum_{j=1}^m y_{ij} \frac{\partial \bar{x}}{\partial \beta^T}')
     st.latex(
-    r''' \frac{\partial^2  \mathbf{L}(\beta)}{\partial \beta \partial \beta^T} = -\sum_{i=1}^N \sum_{j=1}^m y_{ij} \sum_{l=1}^m p_{il} (x_{il} - \bar{x}) x^T_{il}
+    r''' \frac{\partial^2  \mathcal{L}(\beta)}{\partial \beta \partial \beta^T} = -\sum_{i=1}^N \sum_{j=1}^m y_{ij} \sum_{l=1}^m p_{il} (x_{il} - \bar{x}) x^T_{il}
     '''
     )
     st.write(
@@ -88,7 +95,7 @@ $ puesto que la suma de las probabilidades debe ser igual a uno, esta expresión
     )
     st.latex(
     r'''
- \frac{\partial^2  \mathbf{L}(\beta)}{\partial \beta \partial \beta^T}= -\sum_{i=1}^N \sum_{j=1}^m p_{ij} (x_{xij} - \bar{x}\bar{x}_i)(x_{xij} - \bar{x}\bar{x}_i)^T
+ \frac{\partial^2  \mathcal{L}(\beta)}{\partial \beta \partial \beta^T}= -\sum_{i=1}^N \sum_{j=1}^m p_{ij} (x_{xij} - \bar{x}\bar{x}_i)(x_{xij} - \bar{x}\bar{x}_i)^T
 
     '''
     )
@@ -97,7 +104,7 @@ $ puesto que la suma de las probabilidades debe ser igual a uno, esta expresión
     )
     st.latex(
     r'''
-    I(\beta) = -E\left[ \frac{\partial^2\mathbf{L}(\beta)}{\partial \beta^2} \right]
+    I(\beta) = -E\left[ \frac{\partial^2\mathcal{L}(\beta)}{\partial \beta^2} \right]
     '''
     )
     st.write(
@@ -200,7 +207,7 @@ def task_2():
     
     st.latex(
         r'''
-        \sqrt{N} (\hat{\beta_{MLE}}-\beta) \sim \mathbf{N}\left( 0, \left[ \sum_{i=1}^{N} \sum_{j=1}^{m} \frac{1}{p_{ij}} \cdot \frac{\partial p_{ij}}{\partial \beta} \cdot \frac{\partial p_{ij}}{\partial \beta^T} - \frac{\partial^2 p_{ij}}{\partial \beta \partial \beta^T} \right]^{-1} \right)
+        \sqrt{N} (\hat{\beta_{MLE}}-\beta) \sim \mathcal{N}\left( 0, \left[ \sum_{i=1}^{N} \sum_{j=1}^{m} \frac{1}{p_{ij}} \cdot \frac{\partial p_{ij}}{\partial \beta} \cdot \frac{\partial p_{ij}}{\partial \beta^T} - \frac{\partial^2 p_{ij}}{\partial \beta \partial \beta^T} \right]^{-1} \right)
         '''
     )
 
@@ -249,7 +256,7 @@ def task_3():
     st.write("A continuación, se presenta la derivación de la segunda derivada, en donde se considera que ${y_ij}$ no depende de $\\beta$:")
 
    
-    st.latex(r'''\frac{\partial^2\mathbf{L}(\beta)}{\partial\beta_k\partial\beta_k^T} = -\sum_{i=1}^{N} \frac{\partial p_{ik}}{\partial\beta^T} x_{i}
+    st.latex(r'''\frac{\partial^2\mathcal{L}(\beta)}{\partial\beta_k\partial\beta_k^T} = -\sum_{i=1}^{N} \frac{\partial p_{ik}}{\partial\beta^T} x_{i}
 ''')
     st.write('Usando el punto (la primera derivada calculada) de partida tenemos:')
     st.latex(r'''
@@ -264,18 +271,175 @@ def task_3():
     I(\beta) = -E\left[\frac{\partial^2 \mathcal{L}}{\partial \beta_k \partial \beta_k^T} \right]= \sum_{i=1}^{N}\sum_{j=1}^{m}p_{ij}(δ_{jk} - p_{ik})x_{ij}x_{ij}^T
     ''')
 
+
+def task_4():
+    st.write('---')
+    # Configuración de la aplicación de Streamlit
+    st.subheader("**Tarea 4: Simulación y Comparación de Modelos Conditional Logit**")
+
+     #Introducción a la tarea
+    st.write('En esta tarea, simularemos un dataset considerando una problematica y estimaremos un modelo Conditional Logit utilizando la librería Statsmodels, pero también una implementación desde cero usando Máxima Verosimilitud')
+
+
+        # Problemáticas
+    st.write('---')
+    st.subheader('Formulación de la Problemática')
+    st.write('Ahora, formularemos una problemática basada en los datos simulados.')
+
+    # Descripción de la problemática (puedes personalizar esto)
+    st.write('Supongamos que estamos estudiando la probabilidad de que un individuo compre un producto basado en una variable explicativa (X) y agrupado por ciertas categorías (grupos). Queremos entender cómo la variable X afecta la decisión de compra en diferentes grupos.')
+
+
+    # Generación de datos simulados con variables explicativas de dos dimensiones
+    np.random.seed(123)
+    n_observaciones = 1000
+    real = [0.3,2.3]
+    grupos = np.kron(np.arange(100), np.ones(10)).astype(int)
+
+    # Variables explicativas con dos dimensiones
+    variables_explicativas = np.random.normal(size=(n_observaciones, 2))
+
+    probabilidades = 1 / (1 + np.exp(-real[0]*variables_explicativas[:, 0] - real[1]*variables_explicativas[:, 1]))
+
+    # probabilidades = 1 / (1 + np.exp(-variables_explicativas))
+    variables_dependientes = (np.random.uniform(size=n_observaciones) < probabilidades).astype(int)
+
+     # Visualización de datos simulados
+    st.write('---')
+    st.write('Ejemplo de observaciones del dataset simulado:')
+    data_simulada = pd.DataFrame({'Grupo': grupos, 'X1': variables_explicativas[:, 0], 'X2': variables_explicativas[:, 1], 'Y': variables_dependientes})
+    st.dataframe(data_simulada, height=400, width=1000)
     
+    
+
+    with st.expander('Ver código simulación datos:'):
+        st.code('''# Generación de datos simulados con variables explicativas de dos dimensiones
+    np.random.seed(123)
+    n_observaciones = 10000
+    grupos = np.kron(np.arange(100), np.ones(10)).astype(int)
+
+    # Variables explicativas con dos dimensiones
+    variables_explicativas = np.random.normal(size=(n_observaciones, 2))
+
+    probabilidades = 1 / (1 + np.exp(-real[0]*variables_explicativas[:, 0] - real[1]*variables_explicativas[:, 1]))
+
+    # probabilidades = 1 / (1 + np.exp(-variables_explicativas))
+    variables_dependientes = (np.random.uniform(size=n_observaciones) < probabilidades).astype(int)  ''')
+
+    def log_likelihood_conditional(beta, X, y, grupos):
+        eta = X.dot(beta)  
+        pr = expit(eta)
+        log_likelihood = 0
+        unique_grupos = np.unique(grupos)
+
+        for grupo in unique_grupos:
+            mask = grupos == grupo
+            pr_grupo = pr[mask]
+            y_grupo = y[mask]
+            log_likelihood += np.sum(y_grupo * np.log(pr_grupo) + (1 - y_grupo) * np.log(1 - pr_grupo))
+
+        return -log_likelihood
+
+    
+
+    res_optim = minimize(log_likelihood_conditional, np.zeros(2), args=(variables_explicativas, variables_dependientes, grupos), method='BFGS')
+    estimated_beta_scratch = res_optim.x
+
+
+    #calculo de los errores estandar
+    std_errors = np.sqrt(np.diag(res_optim.hess_inv))
+
+
+    #diseño de los resultados
+    st.write('---')
+    # Implementación del modelo Conditional Logit con maxima verosmilitud
+    st.subheader('Estimación del Modelo Conditional Logit con implementación:')
+    cols = st.columns(4) 
+    with cols[0]:
+        st.write('Parámetro:')
+        st.write(f'Beta 1')
+        st.write(f'Beta 2')
+    with cols[1]:
+        st.write('Estimación:')
+        st.write(f'{estimated_beta_scratch[0]:.4f}')
+        st.write(f'{estimated_beta_scratch[1]:.4f}')
+    with cols[2]:
+        st.write('Desviación:')
+        st.write(f'{std_errors[0]:.4f}')
+        st.write(f'{std_errors[1]:.4f}')
+    with cols[3]:
+        st.write('Real:')
+        st.write(f'{real[0]:.4f}')
+        st.write(f'{real[1]:.4f}')    
+
+    with st.expander('Ver código estimación:'):
+        st.code('''
+    def log_likelihood_conditional(beta, X, y, grupos):
+        eta = X.dot(beta)  
+        pr = expit(eta)
+        log_likelihood = 0
+        unique_grupos = np.unique(grupos)
+
+        for grupo in unique_grupos:
+            mask = grupos == grupo
+            pr_grupo = pr[mask]
+            y_grupo = y[mask]
+            log_likelihood += np.sum(y_grupo * np.log(pr_grupo) + (1 - y_grupo) * np.log(1 - pr_grupo))
+
+        return -log_likelihood
+
+    
+
+    res_optim = minimize(log_likelihood_conditional, np.zeros(2), args=(variables_explicativas, variables_dependientes, grupos), method='BFGS')
+    estimated_beta_scratch = res_optim.x
+
+
+    #calculo de los errores estandar
+    std_errors = np.sqrt(np.diag(res_optim.hess_inv))
+ ''')
+    st.write('---')
+
+    # Implementación del modelo Conditional Logit de Statsmodels
+    st.subheader('Estimación del Modelo Conditional Logit de Statsmodels')
+    st.write('Utilizaremos el modelo Conditional Logit de la librería Statsmodels para analizar esta problemática.')
+
+    # Creación del modelo Conditional Logit de Statsmodels
+    modelo_statsmodels = ConditionalLogit(endog=variables_dependientes, exog=variables_explicativas, groups=grupos)
+    results_statsmodels = modelo_statsmodels.fit()
+
+    # Mostrar resultados del modelo de Statsmodels
+    st.write(results_statsmodels.summary())
+
+    with st.expander('Ver código estimación:'):
+        st.code('''
+  # Creación del modelo Conditional Logit de Statsmodels
+    modelo_statsmodels = ConditionalLogit(endog=variables_dependientes, exog=variables_explicativas, groups=grupos)
+    results_statsmodels = modelo_statsmodels.fit()
+
+    # Mostrar resultados del modelo de Statsmodels
+    st.write(results_statsmodels.summary())
+ ''')
+    st.write('---')
+
+    st.write('**Conclusiones**')
+    st.write('Dado que, de acuerdo con la documentación de la función implementada, el algoritmo usa conditional likelihood.  Los resultados pueden ser un poco diferentes, '
+             'además, de acuerdo al método de optimización usado ambos pueden diverger un poco. Aún asī, encontramos que ambos métodos se acercan muy bien a los valores poblacionales con apenas 1000 datos.')
 
 # Define un diccionario para mapear la selección a la función de tarea correspondiente
 task_functions = {
-    1: task_1,
-    2: task_2,
-    3: task_3
+    'Tarea 1': task_1,
+    'Tarea 2': task_2,
+    'Tarea 3': task_3,
+    'Tarea 4': task_4
     # Agregar funciones para las demás tareas
 }
 
+st.write('---')
+selected = option_menu('Selección de Tarea', options=list(task_functions.keys()), 
+    icons=['book' for i in task_functions.keys()], default_index=0,orientation="horizontal")
+
 # Llama a la función de tarea seleccionada
-if option in task_functions:
-    task_functions[option]()
+if selected in task_functions:
+    task_functions[selected]()
 else:
     st.write('Selecciona una tarea válida en el menú de opciones.')

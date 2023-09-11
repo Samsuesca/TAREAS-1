@@ -2,18 +2,20 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from streamlit_option_menu import option_menu
 
-# Variable global para la longitud de la lista de opciones
-num_options = 2  # Puedes cambiar esto según tus necesidades
+st.set_page_config(page_title='S2',
+                    page_icon=':book:',
+                    layout='wide')
+
 
 # Título de la semana
 st.title('Semana 2 - Introducción a Máxima Verosimilitud')
 
-# Menú de opciones
-option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1))
 
 # Funciones para las tareas específicas
 def task_1():
+    st.write('---')
     # Título de la tarea
     st.header('Tarea 1: Explorar las Diferencias entre Estimadores de $\sigma^2$ en Regresión Lineal')
 
@@ -256,6 +258,7 @@ def task_1():
     ax.legend() ''')
 
 def task_2():
+    st.write('---')
     st.subheader('Tarea 2: Segunda Condición de Regularidad en Máxima Verosimilitud')
     
     # Descripción de la Matriz de Información de Fisher
@@ -275,14 +278,19 @@ def task_2():
     st.latex(r'I(\theta;x) = \mathbb{E}\left[-\frac{\partial^2 \ln f(x;\theta)}{\partial \theta \partial \theta^T}\right]')
 
 # Define un diccionario para mapear la selección a la función de tarea correspondiente
+# Define un diccionario para mapear la selección a la función de tarea correspondiente
 task_functions = {
-    1: task_1,
-    2: task_2
+    'Tarea 1': task_1,
+    'Tarea 2': task_2
     # Agregar funciones para las demás tareas
 }
 
+st.write('---')
+selected = option_menu('Selección de Tarea', options=list(task_functions.keys()), 
+    icons=['book' for i in task_functions.keys()], default_index=0,orientation="horizontal")
+
 # Llama a la función de tarea seleccionada
-if option in task_functions:
-    task_functions[option]()
+if selected in task_functions:
+    task_functions[selected]()
 else:
     st.write('Selecciona una tarea válida en el menú de opciones.')

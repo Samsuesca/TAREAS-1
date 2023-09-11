@@ -2,19 +2,22 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats  #
+from streamlit_option_menu import option_menu
 
-# Variable global para la longitud de la lista de opciones
-num_options = 2
+
+st.set_page_config(page_title='S1',
+                    page_icon=':book:',
+                    layout='wide')
+
 
 # Título de la semana
 st.title('Semana 1 - Teoría Asintótica')
-st.write('---')
 
-# Menú de opciones
-option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1))
+
 
 # Función para la tarea 1
 def task_1():
+    st.write('---')
     # Título de la página
     st.header("Tarea 1: Consistencia del Estimador MCO")
 
@@ -173,6 +176,7 @@ def task_1():
 
 # Función para la tarea 2
 def task_2():
+    st.write('---')
     # Título de la tarea
     st.header('Tarea 2: Convergencia en Probabilidad y la Desigualdad de Chebyshev')
 
@@ -243,12 +247,17 @@ del Chebyshev.''')
 
 # Define un diccionario para mapear la selección a la función de tarea correspondiente
 task_functions = {
-    1: task_1,
-    2: task_2
+    'Tarea 1': task_1,
+    'Tarea 2': task_2
+    # Agregar funciones para las demás tareas
 }
 
+st.write('---')
+selected = option_menu('Selección de Tarea', options=list(task_functions.keys()), 
+    icons=['book' for i in task_functions.keys()], default_index=0,orientation="horizontal")
+
 # Llama a la función de tarea seleccionada
-if option in task_functions:
-    task_functions[option]()
+if selected in task_functions:
+    task_functions[selected]()
 else:
     st.write('Selecciona una tarea válida en el menú de opciones.')

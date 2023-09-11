@@ -6,8 +6,6 @@ num_options = 2  # Puedes cambiar esto según tus necesidades
 # Título de la semana
 st.title('Semana X - ')
 
-# Menú de opciones
-option = st.sidebar.selectbox('Selecciona una tarea:', range(1, num_options + 1))
 
 # Funciones para las tareas específicas
 def task_1():
