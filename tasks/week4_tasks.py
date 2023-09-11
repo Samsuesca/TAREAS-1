@@ -224,7 +224,7 @@ def task_3():
     ''')
 
     # Explicación de las derivadas parciales en MNL
-    st.write("Para calcular el gradiente de la log-verosimilitud en el modelo MNL, se calculan las derivadas parciales de las probabilidades con respecto a los parámetros (β). A continuación, se presenta la derivación de una de estas derivadas parciales:")
+    st.write("Para maximizar la log-verosimilitud en el modelo MNL, se calculan las derivadas parciales de las probabilidades con respecto a los parámetros (β). A continuación, se presentan estas derivadas parciales:")
 
     # Fórmula de la derivación parcial
     st.latex(r'''

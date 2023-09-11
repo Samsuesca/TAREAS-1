@@ -16,7 +16,6 @@ pages = [
     Page("tasks/week4_tasks.py", " Semana", "4️⃣ "),
     Page("tasks/week5_tasks.py", " Semana", "5️⃣ "),
     Page("tasks/week6_tasks.py", " Semana", "6️⃣ "),
-    Page("tasks/week7_tasks.py", " Semana", "7️⃣ "),
     Page("tasks/week8_tasks.py", " Semana", "8️⃣ ")
 ]
 
