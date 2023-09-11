@@ -208,12 +208,69 @@ def task_2():
     st.write('Esta es la demostración de la distribución asintótica de los estimadores MLE en modelos multinomiales.')
 
 def task_3():
-    st.subheader('Tarae 3L')
+    st.subheader('**Tarea 2: Segunda derivada en el MNL (logit multinomial)**')
+ 
+
+    st.write("En esta tarea, exploraremos el modelo MNL, específicamente deducir la segunda derivada del log-likelihood.")
+
+    
+
+    # Explicación del modelo MNL
+    st.write("El modelo multinomial logit (MNL) es utilizado para describir el comportamiento de una variable discreta con más de dos resultados posibles. En este modelo, se asume que las probabilidades de cada alternativa están relacionadas a través de una función logística.")
+
+    # Fórmula MNL
+    st.latex(r'''
+    p_{ij} = \frac{e^{x_{ij}\beta_j}}{\sum_{l=1}^{m} e^{x_{il}\beta_l}}
+    ''')
+
+    # Explicación de las derivadas parciales en MNL
+    st.write("Para calcular el gradiente de la log-verosimilitud en el modelo MNL, se calculan las derivadas parciales de las probabilidades con respecto a los parámetros (β). A continuación, se presenta la derivación de una de estas derivadas parciales:")
+
+    # Fórmula de la derivación parcial
+    st.latex(r'''
+    \frac{\partial p_{ij}}{\partial \beta_k} = p_{ij}(δ_{jk} - p_{ik})x_i
+    ''')
+
+    # Explicación de las primeras derivadas en MNL
+    st.write("Definimos las primeras derivadas o las condiciones de primer orden para la estimación de los parámetros (β) en el modelo MNL, esto basandonos en:")
+    
+    st.latex(
+        r'''
+        \frac{\partial \mathcal{L}}{\partial \beta_k} = \sum_{i=1}^{N} \sum_{j=1}^{m} \frac{y_{ij}}{p_{ij}} \frac{\partial p_{ij}}{\partial \beta} = 0
+        '''
+    )
+    st.write('Por tanto:')
+    # Fórmula de las primeras derivadas
+    st.latex(r'''
+    \frac{\partial \mathcal{L}}{\partial \beta_k} = \sum_{i=1}^{N}(y_{ik} - p_{ik})x_{ij}
+    ''')
+
+    # Explicación de la segunda derivada en MNL
+    st.write("A continuación, se presenta la derivación de la segunda derivada, en donde se considera que ${y_ij}$ no depende de $\\beta$:")
+
+   
+    st.latex(r'''\frac{\partial^2\mathbf{L}(\beta)}{\partial\beta_k\partial\beta_k^T} = -\sum_{i=1}^{N} \frac{\partial p_{ik}}{\partial\beta^T} x_{i}
+''')
+    st.write('Usando el punto (la primera derivada calculada) de partida tenemos:')
+    st.latex(r'''
+    \frac{\partial^2 \mathcal{L}}{\partial \beta_k \partial \beta_k^T} = -\sum_{i=1}^{N}p_{ij}(δ_{jk} - p_{ik})x_{ij}x_{ij}^T
+    ''')
+
+    # Resultado asintótico en MNL
+    st.write("El resultado asintótico establece que los estimadores MLE de β convergen en distribución a una distribución normal con media β. La matriz de información de Fisher se calcula de la siguiente manera:")
+
+    # Matriz de información de Fisher en MNL
+    st.latex(r'''
+    I(\beta) = -E\left[\frac{\partial^2 \mathcal{L}}{\partial \beta_k \partial \beta_k^T} \right]= \sum_{i=1}^{N}\sum_{j=1}^{m}p_{ij}(δ_{jk} - p_{ik})x_{ij}x_{ij}^T
+    ''')
+
+    
 
 # Define un diccionario para mapear la selección a la función de tarea correspondiente
 task_functions = {
     1: task_1,
-    2: task_2
+    2: task_2,
+    3: task_3
     # Agregar funciones para las demás tareas
 }
 
