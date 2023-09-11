@@ -41,7 +41,7 @@ def task_1():
 
 
 
-    st.write('Tomando el meos valor esperado y por la estimación de varianza asintotica tenemos que:')
+    st.write('Tomando menos valor esperado y por la estimación de varianza asintotica tenemos que:')
 
     st.latex(r'V[\hat{\beta}_{\text{ML}}] = \left(\sum_{i=1}^N \frac{1}{F(x_i\hat{\beta})(1 - F(x_i\hat{\beta}))} F\'(x_i\hat{\beta})^2x_ix_i^T\right)^{-1}')
 
