@@ -106,7 +106,7 @@ st.write('---')
 
 st.write('- Puedes navegar semana tras semana para ver las tareas propuestas.')
 st.write('- Si la tarea tiene ejercicios de simulación no olvides visualizar el código en el expander.')
-
+st.write('- La gran parte de este proyecto fue basado en el libro de Microeconometría de Cameron y Trivedi. Pero también se usaron fuentes auxiliares como wikipedia, y otros post de econometria. Para las simulaciones se utilizó apoyo de las documentaciones oficiales de las librerías y softwares utilizados')
 
 
 
