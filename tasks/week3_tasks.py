@@ -183,26 +183,8 @@ def task_2():
     true_values = [0.5, 1, -0.7, 0.5, 1]
 
     std_errors = np.sqrt(np.diag(result.hess_inv))
-    std_beta0, std_beta1, std_beta2, std_alpha1, std_alpha2 = std_errors
-
-    cols = st.columns(4) 
-    with cols[0]:
-        st.write('Parámetro:')
-    with cols[1]:
-        st.write('Estimación:')
-    with cols[2]:
-        st.write('Desviación')
-    with cols[3]:
-        st.write('Real:')
-    for i, param_name in enumerate(param_names):
-        with cols[0]:
-            st.write(f'{param_name}')
-        with cols[1]: 
-            st.write(f'{estimated_params[i]:.4f}')
-        with cols[2]:
-            st.write(f'{std_errors[i]:.4f}')
-        with cols[3]:
-            st.write(f'{true_values[i]}') ''')
+    
+''')
 
 
     # Visualización de los resultados

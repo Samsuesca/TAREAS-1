@@ -172,6 +172,38 @@ def task_1():
             ax1.legend()
             fig1.savefig('images/s1t1f2.png')
             st.image("images/s1t1f2.png")''')
+        
+    st.write('---')
+    st.write('**Desarrollo Matemático:**')
+    st.write('Desarrollaremos ahora la parte matemática para mostrar las propiedades asintóticas del estimador de MCO')
+    st.markdown("Consistencia")
+    st.write("Existen dos formas de demostrar que el estimador MCO (que para simplificar, de aquí en adelante llamaremos $\\hat{\\beta}$) es consistente. Directamente, mostrando que converge en probabilidad a $\\beta$, o indirectamente, demostrando que converge en segundo momento a $\\beta$ y, por lo tanto, en probabilidad. Para simplificar y mostrar la falta de sesgo del estimador MCO, emplearemos la demostración indirecta.")
+
+    st.write("Comenzamos calculando el error muestral, ya que es útil para encontrar el sesgo y la varianza analítica de $\\hat{\\beta}$.")
+    st.latex(r"\hat{\beta} - \beta = (X^TX)^{-1}X^Ty - \beta ")
+    st.latex(r'\hat{\beta} - \beta= (X^TX)^{-1}X^T(X\beta + \epsilon) - \beta ')
+    st.latex(r'\hat{\beta} - \beta = \beta + (X^TX)^{-1}X^T\epsilon - \beta ')
+    st.latex(r'\hat{\beta} - \beta =  = (X^TX)^{-1}X^T\epsilon')
+
+    st.write("La sencilla álgebra matricial y la suposición de media nula del error nos llevan a concluir que el sesgo es cero.")
+    st.latex(r"bias(\hat{\beta}) = E(\hat{\beta} - \beta)  = (X^TX)^{-1}X^TE(\epsilon) = 0")
+    st.latex(r'bias(\hat{\beta}) = E((X^TX)^{-1}X^T\epsilon)')
+    st.latex(r'bias(\hat{\beta}) = (X^TX)^{-1}X^TE(\epsilon) = 0')
+    st.write("Definimos $A = (X^TX)^{-1}X^T$, entonces la varianza de $\hat{\\beta}$ es:")
+    st.latex(r"Var(\hat{\beta}) = Var(\hat{\beta} - \beta) = Var((X^TX)^{-1}X^T\epsilon)")
+    st.latex(r'Var(\hat{\beta}) = AVar(\epsilon)\ A^T = A\sigma^2I_n A^T ')
+    st.latex(r' Var(\hat{\beta})  = A\sigma^2AA^T = \sigma^2AA^T')
+    st.latex(r'Var(\hat{\beta}) = \sigma^2(X^TX)^{-1}X^T((X^TX)^{-1}X^T)^T = \sigma^2((X^TX)^T)^{-1} = \sigma^2(X^TX)^{-1}')
+    
+    st.write('Entonces, puesto que la matriz inversa (X^TX)^{-1} aumenta su información cunando la muestra es asintótica, tenemos que:')
+    st.latex(r"\lim_{n\to\infty}MSE(\hat{\beta}) = \lim_{n\to\infty}\sigma^2(X^TX)^{-1} = 0.")
+
+    st.write("Por lo tanto, $\hat{\\beta}$ converge en segundo momento a $\\beta$ y, en consecuencia, converge en probabilidad a $\\beta$, es decir, es consistente.")
+
+    st.write("A partir de lo anterior, sabemos que $\\hat{\\beta}$ converge en distribución a $\\beta$, ya que esta es una convergencia menos exigente que la convergencia en probabilidad.")
+
+    st.write("Esto concluye la demostración.")
+
 
 
 # Función para la tarea 2
@@ -186,14 +218,30 @@ def task_2():
     st.write(
         "La desigualdad de Chebyshev es muy utilizada en estadística y probabilidad ya que nos proporciona una cuota superior "
         "para la probabilidad de que una variable aleatoria se desvíe de su valor esperado por más de un cierto valor, "
-        "y se puede aplicar a cualquier distribución con varianza finita. Concretamente, par una variable aleatoria X, con $𝐸(𝑋)=\mu$ y $𝑉𝑎𝑟(X)=\sigma^2$"
+        "y se puede aplicar a cualquier distribución con varianza finita. Concretamente, par una variable aleatoria X, con $𝐸(𝑋_n)=\mu$ y $𝑉𝑎𝑟(X_n)=\sigma^2$"
         "la desigualdad anuncia:"
     )
 
     st.latex(r"P(|X - \mu| \geq k\sigma) \leq \frac{1}{k^2}")
 
+    st.write('Exploraremos como demostrar la convergencia en probablidad usando la desigualdad de Chebyshev, para eso consideramos el caso de la variable aleatoria donde:')
+    st.latex(r'\mathbb{E}(X_{\bar{n}}) = \frac{1}{n} \sum_{i=1}^{n} \mathbb{E}(X_i) = \mu')
+    st.latex(r'\text{Var}(X_{\bar{n}}) = \frac{1}{n^2} \sum_{i=1}^{n} \text{Var}(X_i) = \frac{\sigma^2}{n}')
+
+    st.write('Aplicando a la desigualdad, tenemos:')
+    st.latex(r'P(|X_{\bar{n}} - \mu| \geq \epsilon) \leq \frac{\text{Var}(X_{\bar{n}})}{\epsilon^2} = \frac{\sigma^2}{n\epsilon^2}')
+    st.write('Sacando el complemento de la probabilidad:')
+    st.latex(r'P(|X_{\bar{n}} - \mu| < \epsilon) = 1 - P(|X_{\bar{n}} - \mu| \geq \epsilon)')
+    st.write('Operando tenemos entonces:')
+    st.latex(r'P(|X_{\bar{n}} - \mu| < \epsilon) \geq 1 - \frac{\sigma^2}{n\epsilon^2}')
+    st.write('Finalmente, tomando el limite, demostramos convergencia en probabilidad a partir de condiciones indiciales:')
+    st.latex(r'\lim_{n \to \infty} P(|X_{\bar{n}} - \mu| < \epsilon) = 1')
+
     # Descripción del problema
-    st.write(''' La desigualdad de Chebyshev puede utilizarse para demostrar la convergencia en probabilidad 
+
+    st.write('---')
+    st.write('**Caso MCO**')
+    st.write(''' La desigualdad de Chebyshev puede también utilizarse para demostrar la convergencia en probabilidad 
     (consistencia) de los estimadores de MCO en términos de la varianza de los estimadores.'''
              '''En el contexto de los estimadores de MCO, podemos aplicar la desigualdad de Chebyshev a la diferencia
               entre el estimador de MCO $\hat{\\beta_j}$ y el valor verdadero del parámetro $\\beta_j$.''')

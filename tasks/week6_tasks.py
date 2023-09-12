@@ -3,11 +3,19 @@ from streamlit_option_menu import option_menu
 import numpy as np
 import scipy.stats as stats
 import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.optimize import minimize
+from scipy.special import gamma, gammaln
 
 
 st.set_page_config(page_title='S6',
                     page_icon=':book:',
                     layout='wide')
+
+
+results_task_1 = {'delta':[32.7874,1.0869],'beta_0':[0.3045,
+0.0130],'beta_1':[-0.2112,0.0139],'beta_2':[0.9930,0.0151]}
+
 
 
 # Título de la semana
@@ -17,8 +25,182 @@ st.title('Semana 6 - Modelos Truncados y de Sesgo de Selección')
 # Funciones para las tareas específicas
 def task_1():
     st.write('---')
-    st.subheader('**Tarea 1: Simulación de modelo truncado hacia la derecha:**')
-    # Agregar contenido de la tarea 1
+    st.subheader("**Tarea 1: Modelo Truncado hacia la Derecha: Simulación y Estimación**")
+    
+
+    # Función para generar datos simulados truncados hacia la derecha
+    def generate_truncated_data(n, true_beta, true_delta, truncation_value):
+        np.random.seed(0)
+        beta = np.array(true_beta)
+        x1 = np.random.normal(size=n)
+        x2 = np.random.binomial(1, 0.5, size=n)
+        X = np.column_stack((np.ones(n), x1, x2))
+        mu = np.exp(np.dot(X, beta))
+        delta_gm = true_delta
+        p = delta_gm / (mu + delta_gm)
+        mu_nb = delta_gm * (1 - p) / p
+        theta_nb = delta_gm
+        y = np.zeros(n)
+        for i in range(n):
+            y[i] = np.random.negative_binomial(theta_nb, theta_nb / (mu_nb[i] + theta_nb))
+            if y[i] >= truncation_value:
+                y[i] = truncation_value - 1
+        return X, y
+
+    # Función para ajustar el modelo de regresión truncado hacia la derecha
+    def truncated_regression(X, y):
+        n, m = X.shape
+        params = np.ones(m + 1)
+
+        def neg_log_likelihood(params):
+            delta = params[0]
+            beta = params[1:]
+            mu = np.exp(np.dot(X, beta))
+            p = delta / (mu + delta)
+            logL = 0
+            for i in range(n):
+                # bincof = gamma(delta + y[i]) / (gamma(delta) * gamma(y[i] + 1))
+                logL += gammaln(delta + y[i]) - (gammaln(delta) + gammaln(y[i] + 1)) + delta * np.log(p[i]) + y[i] * np.log(1 - p[i])
+            return -logL
+
+        result = minimize(neg_log_likelihood, params, method='BFGS')
+        std_errors = np.sqrt(np.diag(result.hess_inv))
+        delta_hat = result.x[0]
+        beta_hat = result.x[1:]
+        return delta_hat, beta_hat, std_errors
+
+    # Parámetros verdaderos
+    true_beta = [0.3,-0.3,1.2]
+    true_delta = 4
+    truncation_value = 7
+
+    #Generar datos truncados hacia la derecha
+    # n = 10000
+    # X, y = generate_truncated_data(n, true_beta, true_delta, truncation_value)
+
+    # # Ajustar el modelo truncado hacia la derecha
+    data = pd.read_csv('data/s6t1d1.csv')
+    X = np.array(data[['1','X1','X2']])
+    y= np.array(data['Y'])
+    # delta_hat, beta_hat, std_errors = truncated_regression(X, y)
+
+    
+
+    # Descripción en formato LaTeX
+    st.write("En esta simulación, hemos generado $n$ observaciones utilizando un modelo de regresión binomial negativa truncado hacia la derecha con los siguientes parámetros verdaderos:")
+    st.latex(r"\beta = [2.3,-0.3,2]")
+    st.latex(r"\delta = 1")
+    st.write("Valor de Truncación = 7")
+
+    # Mostrar los datos generados
+    st.write('---')
+    st.subheader("Datos Generados")
+    # data = pd.DataFrame({'Y':y,'1':X[:, 0],'X1':X[:, 1],'X2':X[:, 2]})
+    # data.to_csv('data/s6t1d1.csv')
+    st.write('Un ejemplo de los datos simulados')
+    st.dataframe(data,width=1000,height=450)
+    st.write('---')
+        # Código para generar datos truncados hacia la derecha
+    with st.expander('Ver Código Datos Truncados hacia la Derecha:'):
+        st.code(f'''  
+        # Parámetros verdaderos
+        true_beta = {true_beta}
+        true_delta = {true_delta}
+        truncation_value = {truncation_value}
+
+        
+        # Función para generar datos simulados truncados hacia la derecha
+        def generate_truncated_data(n, true_beta, true_delta, truncation_value):
+            np.random.seed(0)
+            beta = np.array(true_beta)
+            x1 = np.random.normal(size=n)
+            x2 = np.random.binomial(1, 0.5, size=n)
+            X = np.column_stack((np.ones(n), x1, x2))
+            mu = np.exp(np.dot(X, beta))
+            delta_gm = true_delta
+            p = delta_gm / (mu + delta_gm)
+            mu_nb = delta_gm * (1 - p) / p
+            theta_nb = delta_gm
+            y = np.zeros(n)
+            for i in range(n):
+                y[i] = np.random.negative_binomial(theta_nb, theta_nb / (mu_nb[i] + theta_nb))
+                if y[i] >= truncation_value:
+                    y[i] = truncation_value - 1
+            return X, y
+
+        n = 1000
+        X, y = generate_truncated_data(n, true_beta, true_delta, truncation_value)
+        ''')
+    st.write('---')
+
+    # Mostrar los resultados de la estimación
+    st.subheader("Resultados de la Estimación")
+    col = st.columns(4)
+    with col[0]:
+        st.write("### Parámetros:")
+        st.write("Theta / Delta:")
+        st.write("B0:")
+        st.write("B1:")
+        st.write("B2:")
+    with col[1]:
+        st.write("### Verdadero:")
+        st.write(true_delta)
+        st.write(true_beta[0])
+        st.write(true_beta[1])
+        st.write(true_beta[2])
+    with col[2]:
+        st.write("### Estimación:")
+        st.write(f'{results_task_1["delta"][0]}')
+        st.write(f'{results_task_1["beta_0"][0]}')
+        st.write(f'{results_task_1["beta_1"][0]}')
+        st.write(f'{results_task_1["beta_2"][0]}')
+        # st.write(f'{delta_hat:.4f}')
+        # st.write(f'{beta_hat[0]:.4f}')
+        # st.write(f'{beta_hat[1]:.4f}')
+        # st.write(f'{beta_hat[2]:.4f}')
+    with col[3]:
+        st.write("### Error Estandar:")
+        st.write(f'{results_task_1["delta"][1]}')
+        st.write(f'{results_task_1["beta_0"][1]}')
+        st.write(f'{results_task_1["beta_1"][1]}')
+        st.write(f'{results_task_1["beta_2"][1]}')
+        # st.write(f'{std_errors[0]:.4f}')
+        # st.write(f'{std_errors[1]:.4f}')
+        # st.write(f'{std_errors[2]:.4f}')
+        # st.write(f'{std_errors[3]:.4f}')
+
+    st.write('---')
+
+
+    # Código para estimar el modelo truncado hacia la derecha
+    with st.expander('Ver Código Estimación del Modelo Truncado hacia la Derecha:'):
+        st.code(f'''  
+        
+        # Función para ajustar el modelo de regresión truncado hacia la derecha
+        def truncated_regression(X, y, truncation_value):
+            n, m = X.shape
+            params = np.ones(m + 1)
+
+            def neg_log_likelihood(params):
+                delta = params[0]
+                beta = params[1:]
+                mu = np.exp(np.dot(X, beta))
+                p = delta / (mu + delta)
+                logL = 0
+                for i in range(n):
+                    logL += gammaln(delta + y[i]) - (gammaln(delta) + gammaln(y[i] + 1)) + delta * np.log(p[i]) + y[i] * np.log(1 - p[i])
+                return -logL
+
+            result = minimize(neg_log_likelihood, params, method='BFGS')
+            std_errors = np.sqrt(np.diag(result.hess_inv))
+            delta_hat = result.x[0]
+            beta_hat = result.x[1:]
+            return delta_hat, beta_hat, std_errors
+
+        # Ajustar el modelo truncado hacia la derecha
+        delta_hat, beta_hat, std_errors = truncated_regression(X, y, truncation_value)
+        ''')
+    st.write('---')
 
 def task_2():
     st.write('---')
