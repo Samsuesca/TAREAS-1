@@ -2,7 +2,7 @@ import streamlit as st
 from st_pages import Page, show_pages, add_page_title,Section
 
 
-st.set_page_config(page_title='TAREAS TÓPICOS EN ECONOMETRÍA',
+st.set_page_config(page_title='TAREAS TÓPICOS EN ECONOMETRÍA LULU',
                     page_icon=':book:',
                     layout='wide')
 
@@ -16,7 +16,7 @@ pages = [
     Page("tasks/week5_tasks.py", " Semana 5", "5️⃣ "),
     Page("tasks/week6_tasks.py", " Semana 6", "6️⃣ "),
     Page("tasks/week8_tasks.py", " Semana 8", "8️⃣ "),
-    Page("tasks/advanced_econometric_exam_exercises.py", " Parcial Jacho", "📝")
+    Page("tasks/advanced_econometric_exam_exercises.py", "Parcial Jacho", "📝")
 ]
 
 # Muestra las páginas en la barra lateral
