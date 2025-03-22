@@ -15,7 +15,8 @@ pages = [
     Page("tasks/week4_tasks.py", " Semana 4", "4️⃣ "),
     Page("tasks/week5_tasks.py", " Semana 5", "5️⃣ "),
     Page("tasks/week6_tasks.py", " Semana 6", "6️⃣ "),
-    Page("tasks/week8_tasks.py", " Semana 8", "8️⃣ ")
+    Page("tasks/week8_tasks.py", " Semana 8", "8️⃣ "),
+    Page("tasks/advanced_econometric_exam_exercises.py", " Parcial Jacho", "📝")
 ]
 
 # Muestra las páginas en la barra lateral
