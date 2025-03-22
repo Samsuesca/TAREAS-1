@@ -2,10 +2,8 @@ import streamlit as st
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import sympy as sp
 import pandas as pd
-from IPython.display import display, Math, Latex
-from sympy import symbols, exp, sqrt, pi, log, Eq
+from streamlit_option_menu import option_menu
 
 # Configuración de la página
 st.set_page_config(
